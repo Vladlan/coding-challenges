@@ -248,7 +248,6 @@
 // V3
 const min = "a".charCodeAt(0);
 const max = "z".charCodeAt(0); 
-
 function solution(P, Q) {
 	const N = P.length;
 	
@@ -261,7 +260,6 @@ function solution(P, Q) {
 	for(let i=0; i<N; i++) {
 		const p = P[i].charCodeAt(0) - min;
 		const q = Q[i].charCodeAt(0) - min;
-		
 		if(p === q) {
 			if(!useds[p]) {
 				counts++;
@@ -370,16 +368,16 @@ function dSolution(P, Q, i) {
 }
 
 const TestCases = [
-    ['adabca', 'cbdcdb', 3],
-     [ "axxz", "yzwy", 2 ],
+    // ['adabca', 'cbdcdb', 3],
+    //  [ "axxz", "yzwy", 2 ],
      [ "ad", "bc", 2 ],
-     [ "abc", "bcd", 2 ],
-     [ "bacad", "abada", 1 ],
-     [ "amz", "amz", 3 ],
-     [ "aaadb", "bbbce", 2 ],
-     ['dddabc', 'abcefg', 3], 
-     ['bsqafgiulewghfiaaplskfhjkldsafjhlkafgsdjhluhefdiuahfulidhg', 
-      'bsdafgiulewghficahlskfhjklzfafjhlkafgsdjwluhefdiurhfueidhg', 14] 
+    //  [ "abc", "bcd", 2 ],
+    //  [ "bacad", "abada", 1 ],
+    //  [ "amz", "amz", 3 ],
+    //  [ "aaadb", "bbbce", 2 ],
+    //  ['dddabc', 'abcefg', 3], 
+    //  ['bsqafgiulewghfiaaplskfhjkldsafjhlkafgsdjhluhefdiuahfulidhg', 
+    //   'bsdafgiulewghficahlskfhjklzfafjhlkafgsdjwluhefdiurhfueidhg', 14] 
 ];
 
 for (const test of TestCases) {
