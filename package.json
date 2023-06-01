@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test-bloxorz-solver": "jest ./bloxorz-solver"
+    "test:bloxorz-solver": "jest ./bloxorz-solver",
+    "debug": "node --nolazy --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --colors --verbose",
+    "test:debug": "open -a \"Google Chrome\" chrome://inspect && node --nolazy --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --colors --verbose --watchAll --notify"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,8 @@
   "homepage": "https://github.com/Vladlan/coding-challenges#readme",
   "dependencies": {
     "jest": "^29.5.0"
+  },
+  "devDependencies": {
+    "node-notifier": "^10.0.1"
   }
 }
