@@ -1,4 +1,3 @@
-const { before } = require("node:test");
 const { Box2d } = require("./index");
 
 const level1 = () => [
@@ -14,6 +13,22 @@ const level2 = () => [
   "11BB110000",
   "1111111110",
   "0111111111",
+  "0000011X11",
+  "0000001110",
+];
+const step3 = () => [
+  "1110000000",
+  "1000010000",
+  "1111B11110",
+  "0111B11111",
+  "0000011X11",
+  "0000001110",
+];
+const step4 = () => [
+  "1110000000",
+  "1000010000",
+  "11110B1110",
+  "01110B1111",
   "0000011X11",
   "0000001110",
 ];
@@ -76,6 +91,18 @@ describe("findNextPosition", () => {
     expect(res).toEqual([[4, 1]]);
     expect(d).toEqual("R");
   });
+  it("should find next position for level3", () => {
+    const box = new Box2d();
+    box.R();
+    box.R();
+    box.D();
+    const [res, d] = findNextPosition(step3(), getStartPosition(step3()), box);
+    expect(res).toEqual([
+      [5, 2],
+      [5, 3],
+    ]);
+    expect(d).toEqual("R");
+  });
 });
 
 describe("moveToNextPosition", () => {
@@ -114,5 +141,25 @@ describe("moveToNextPosition", () => {
     expect(lStep1).toEqual(step1());
     const lStep2 = moveToNextPosition(lStep1, box);
     expect(lStep2).toEqual(step2());
+  });
+
+  it("should return level with new box position after step4", () => {
+    box.R();
+    box.R();
+    box.D();
+    const lStep4 = moveToNextPosition(step3(), box);
+    expect(lStep4).toEqual(step4());
+  });
+
+  it("should return level with new box position after 4 steps", () => {
+    const level = level1();
+    const lStep1 = moveToNextPosition(level, box);
+    expect(lStep1).toEqual(step1());
+    const lStep2 = moveToNextPosition(lStep1, box);
+    expect(lStep2).toEqual(step2());
+    const lStep3 = moveToNextPosition(lStep2, box);
+    expect(lStep3).toEqual(step3());
+    const lStep4 = moveToNextPosition(lStep3, box);
+    expect(lStep4).toEqual(step4());
   });
 });
