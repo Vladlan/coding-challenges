@@ -1,3 +1,17 @@
+const keypress = async () => {
+  process.stdin.setRawMode(true);
+  return new Promise((resolve) =>
+    process.stdin.once("data", (data) => {
+      const byteArray = [...data];
+      if (byteArray.length > 0 && byteArray[0] === 3) {
+        process.exit(1);
+      }
+      process.stdin.setRawMode(false);
+      resolve();
+    })
+  );
+};
+
 // z___x
 // |
 // y
@@ -90,6 +104,21 @@ const getSecondNextCoord = (box, bCoord, h, bCoords, sign) => {
   }
 };
 
+function getFreeYLength(arr, d = "D", bCoord) {
+  for (const [x, y] of bCoords) {
+    if (x < xCoords[0]) allowedCoords["R"] = true;
+    if (x > xCoords[0]) allowedCoords["L"] = true;
+    const nexByD = arr[y + 2] ? arr[y + 2][x] : null;
+    if (nexByD && ["1", "X", "B"].includes(nexByD)) {
+      allowedCoords["D"] = true;
+    }
+    const nexByU = arr[y - 2] ? arr[y - 2][x] : null;
+    if (nexByU && ["1", "X", "B"].includes(nexByU)) {
+      allowedCoords["U"] = true;
+    }
+  }
+}
+
 let xCoords = null;
 function getALlowedDirections(arr, bCoords) {
   if (!xCoords) {
@@ -100,8 +129,14 @@ function getALlowedDirections(arr, bCoords) {
     const [x, y] = coors;
     if (x < xCoords[0]) allowedCoords["R"] = true;
     if (x > xCoords[0]) allowedCoords["L"] = true;
-    if (y < xCoords[1]) allowedCoords["D"] = true;
-    if (y > xCoords[1]) allowedCoords["U"] = true;
+    const nexByD = arr[y + 2] ? arr[y + 2][x] : null;
+    if (nexByD && ["1", "X", "B"].includes(nexByD)) {
+      allowedCoords["D"] = true;
+    }
+    const nexByU = arr[y - 2] ? arr[y - 2][x] : null;
+    if (nexByU && ["1", "X", "B"].includes(nexByU)) {
+      allowedCoords["U"] = true;
+    }
   }
   const allowedCoorsArr = Object.keys(allowedCoords);
   for (const h of DIRECTIONS) {
@@ -169,16 +204,18 @@ const moveToNextPosition = (arr, box) => {
   return arr;
 };
 
-function bloxSolver(arr) {
+async function bloxSolver(arr) {
   const box = new Box2d();
   let i = 0;
   while (i < 1000) {
     arr = moveToNextPosition(arr, box);
+    console.log("arr: ", arr);
     console.log("ANSWER: ", ANSWER.join(""));
+    await keypress();
     if (X) return ANSWER.join("");
     i++;
   }
-  console.log('FAILED!!! ');
+  console.log("FAILED!!! ");
   return arr;
 }
 
@@ -234,7 +271,7 @@ const i5 = [
   "000000111110000",
   "000000011100000",
 ];
-const res = bloxSolver(i5);
+const res = bloxSolver(i3);
 console.log("res: ", res);
 
 module.exports = {
