@@ -1,0 +1,22 @@
+{
+  "name": "coding-challenges",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test-bloxorz-solver": "jest ./bloxorz-solver"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vladlan/coding-challenges.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vladlan/coding-challenges/issues"
+  },
+  "homepage": "https://github.com/Vladlan/coding-challenges#readme",
+  "dependencies": {
+    "jest": "^29.5.0"
+  }
+}
