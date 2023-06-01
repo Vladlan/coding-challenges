@@ -2,9 +2,11 @@
 // |
 // y
 class Box2d {
-  oz = 2;
-  oy = 1;
-  ox = 1;
+  constructor() {
+    this.ox = 1;
+    this.oy = 1;
+    this.oz = 2;
+  }
   R(info = false) {
     if (info) {
       return [this.oz, 1];
@@ -43,13 +45,13 @@ class Box2d {
   }
 }
 
-getStartPosition = (arr) => {
+const getPositionOf = (arr, subj) => {
   const bCoords = [];
   for (let y = 0; y < arr.length; y++) {
     const row = arr[y];
     for (let x = 0; x < row.length; x++) {
       const cell = row[x];
-      if (cell === "B") {
+      if (cell === subj) {
         bCoords.push([x, y]);
       }
     }
@@ -59,7 +61,7 @@ getStartPosition = (arr) => {
 
 const DIRECTIONS = ["R", "D", "L", "U"];
 
-getProperCoord = (coords, d) => {
+const getProperCoord = (coords, d) => {
   if (coords.length === 1) return coords[0];
   if (d === "R") return coords[0][0] > coords[1][0] ? coords[0] : coords[1];
   if (d === "L") return coords[0][0] < coords[1][0] ? coords[0] : coords[1];
@@ -67,12 +69,11 @@ getProperCoord = (coords, d) => {
   if (d === "D") return coords[0][1] > coords[1][1] ? coords[0] : coords[1];
 };
 
-getAnotherCoord = (bCoords, bCoord) => {
+const getAnotherCoord = (bCoords, bCoord) => {
   return bCoords.find((c) => c.join() !== bCoord.join());
 };
 
-getSecondNextCoord = (box, bCoord, h, bCoords, sign) => {
-    console.log('box: ', box);
+const getSecondNextCoord = (box, bCoord, h, bCoords, sign) => {
   if (box.oy === 2 && ["L", "R"].includes(h)) {
     const bCoord2 = getAnotherCoord(bCoords, bCoord);
     return [bCoord2[0] + sign, bCoord2[1]];
@@ -89,70 +90,157 @@ getSecondNextCoord = (box, bCoord, h, bCoords, sign) => {
   }
 };
 
-findNextPosition = (arr, bCoords, box) => {
+let xCoords = null;
+function getALlowedDirections(arr, bCoords) {
+  if (!xCoords) {
+    xCoords = getPositionOf(arr, "X")[0];
+  }
+  const allowedCoords = {};
+  for (const coors of bCoords) {
+    const [x, y] = coors;
+    if (x < xCoords[0]) allowedCoords["R"] = true;
+    if (x > xCoords[0]) allowedCoords["L"] = true;
+    if (y < xCoords[1]) allowedCoords["D"] = true;
+    if (y > xCoords[1]) allowedCoords["U"] = true;
+  }
+  const allowedCoorsArr = Object.keys(allowedCoords);
   for (const h of DIRECTIONS) {
+    if (!allowedCoorsArr.includes(h)) {
+      allowedCoorsArr.push(h);
+    }
+  }
+  return allowedCoorsArr;
+}
+
+function findNextPosition(arr, bCoords, box) {
+  const allowedDirections = getALlowedDirections(arr, bCoords);
+  for (const h of allowedDirections) {
     const [d, sign] = box[h](true);
     const D = d * sign;
     const newCoords = [];
-    console.log("d: ", d);
 
     const bCoord = getProperCoord(bCoords, h);
     const [bx, by] = bCoord;
     if (["R", "L"].includes(h)) {
-      const nexBx = arr[by]?.[bx + D];
+      const nexBx = arr[by] ? arr[by][bx + D] : null;
       if (nexBx && ["1", "X", "B"].includes(nexBx)) {
+        if (nexBx === "X") X = "X";
         return [
-          [
-            getSecondNextCoord(box, bCoord, h, bCoords, sign),
-            [bx + D, by],
-          ].filter(Boolean).sort((a, b) => a[0] - b[0]),
+          [getSecondNextCoord(box, bCoord, h, bCoords, sign), [bx + D, by]]
+            .filter(Boolean)
+            .sort((a, b) => a[0] - b[0]),
           h,
         ];
       }
     }
     if (newCoords.length === d) return [newCoords, h];
     if (["U", "D"].includes(h)) {
-      const nexBy = arr[by + D]?.[bx];
+      const nexBy = arr[by + D] ? arr[by + D][bx] : null;
       if (nexBy && ["1", "X", "B"].includes(nexBy)) {
+        if (nexBy === "X") X = "X";
         return [
-          [
-            getSecondNextCoord(box, bCoord, h, bCoords, sign),
-            [bx, by + D],
-          ].filter(Boolean).sort((a, b) => a[1] - b[1]),
+          [getSecondNextCoord(box, bCoord, h, bCoords, sign), [bx, by + D]]
+            .filter(Boolean)
+            .sort((a, b) => a[1] - b[1]),
           h,
         ];
       }
     }
   }
-};
+}
 
-replaceCharInString = (str, index, char) => {
+const replaceCharInString = (str, index, char) => {
   return str.substring(0, index) + char + str.substring(index + 1);
 };
 
-moveToNextPosition = (arr, box) => {
-  console.log("arr1: ", arr);
-  const startPos = getStartPosition(arr);
-  console.log("startPos: ", startPos);
+let X = null;
+const ANSWER = [];
+const moveToNextPosition = (arr, box) => {
+  const startPos = getPositionOf(arr, "B");
   const [newCoords, d] = findNextPosition(arr, startPos, box);
-  console.log("newCoords: ", newCoords, d);
+  ANSWER.push(d);
   box[d]();
   for (const [x, y] of newCoords) {
     arr[y] = replaceCharInString(arr[y], x, "B");
   }
   for (const [x, y] of startPos) {
-    arr[y] = replaceCharInString(arr[y], x, "0");
+    arr[y] = replaceCharInString(arr[y], x, "1");
   }
-  console.log("arr2: ", arr);
   return arr;
 };
 
-function bloxSolver(arr) {}
+function bloxSolver(arr) {
+  const box = new Box2d();
+  let i = 0;
+  while (i < 1000) {
+    arr = moveToNextPosition(arr, box);
+    console.log("ANSWER: ", ANSWER.join(""));
+    if (X) return ANSWER.join("");
+    i++;
+  }
+  console.log('FAILED!!! ');
+  return arr;
+}
+
+const i1 = [
+  "1110000000",
+  "1B11110000",
+  "1111111110",
+  "0111111111",
+  "0000011X11",
+  "0000001110",
+];
+const i2 = [
+  "000000111111100",
+  "111100111001100",
+  "111111111001111",
+  "1B11000000011X1",
+  "111100000001111",
+  "000000000000111",
+];
+const i3 = [
+  "00011111110000",
+  "00011111110000",
+  "11110000011100",
+  "11100000001100",
+  "11100000001100",
+  "1B100111111111",
+  "11100111111111",
+  "000001X1001111",
+  "00000111001111",
+];
+const i4 = [
+  "11111100000",
+  "1B111100000",
+  "11110111100",
+  "11100111110",
+  "10000001111",
+  "11110000111",
+  "11110000111",
+  "00110111111",
+  "01111111111",
+  "0110011X100",
+  "01100011100",
+];
+const i5 = [
+  "000001111110000",
+  "000001001110000",
+  "000001001111100",
+  "B11111000001111",
+  "0000111000011X1",
+  "000011100000111",
+  "000000100110000",
+  "000000111110000",
+  "000000111110000",
+  "000000011100000",
+];
+const res = bloxSolver(i5);
+console.log("res: ", res);
 
 module.exports = {
   bloxSolver,
   Box2d,
-  getStartPosition,
+  getStartPosition: getPositionOf,
   findNextPosition,
   moveToNextPosition,
 };
