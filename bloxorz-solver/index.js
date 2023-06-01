@@ -57,36 +57,67 @@ getStartPosition = (arr) => {
   return bCoords;
 };
 
-const DIRECTIONS = ["R", "U", "D", "L"];
+const DIRECTIONS = ["R", "D", "L", "U"];
+
+getProperCoord = (coords, d) => {
+    if (coords.length === 1) return coords[0];
+    if (d === "R") return coords[0][0] > coords[1][0] ? coords[0] : coords[1];
+    if (d === "L") return coords[0][0] < coords[1][0] ? coords[0] : coords[1]; 
+    if (d === "U") return coords[0][1] < coords[1][1] ? coords[0] : coords[1];
+    if (d === "D") return coords[0][1] > coords[1][1] ? coords[0] : coords[1];
+}
 
 findNextPosition = (arr, bCoords, box) => {
   for (const h of DIRECTIONS) {
     const [d, sign] = box[h](true);
     const D = d * sign;
     const newCoords = [];
-    debugger;
-    for (const bCoord of bCoords) {
-      const [bx, by] = bCoord;
-      if (["R", "L"].includes(h)) {
-        const nexBx = arr[by]?.[bx + D];
-        if (nexBx && ["1", "X", "B"].includes(nexBx)) {
-          newCoords.push([bx + D, by]);
-          if (d > 1) newCoords.unshift([bx + sign, by]);
-        }
+    
+    const bCoord = getProperCoord(bCoords, h);
+    const [bx, by] = bCoord;
+    if (["R", "L"].includes(h)) {
+      const nexBx = arr[by]?.[bx + D];
+      if (nexBx && ["1", "X", "B"].includes(nexBx)) {
+        newCoords.push([bx + D, by]);
+        if (d > 1) newCoords.unshift([bx + sign, by]);
       }
-      if (newCoords.length === d) return [newCoords, h];
-      if (["U", "D"].includes(h)) {
-        const nexBy = arr[by + D]?.[bx];
-        if (nexBy && ["1", "X", "B"].includes(nexBy)) {
-          newCoords.push([bx, by + D]);
-          if (d > 1) newCoords.unshift([bx, by + sign]);
-        }
-      }
-      if (newCoords.length === d) return [newCoords, h];
     }
+    if (newCoords.length === d) return [newCoords, h];
+    if (["U", "D"].includes(h)) {
+      const nexBy = arr[by + D]?.[bx];
+      if (nexBy && ["1", "X", "B"].includes(nexBy)) {
+        newCoords.push([bx, by + D]);
+        if (d > 1) newCoords.unshift([bx, by + sign]);
+      }
+    }
+    if (newCoords.length === d) return [newCoords, h];
+  
   }
+};
+
+replaceCharInString = (str, index, char) => {
+  return str.substring(0, index) + char + str.substring(index + 1);
+};
+
+moveToNextPosition = (arr, box) => {
+  const startPos = getStartPosition(arr);
+  const [newCoords, d] = findNextPosition(arr, startPos, box);
+  box[d]();
+  for (const [x, y] of newCoords) {
+    arr[y] = replaceCharInString(arr[y], x, "B");
+  }
+  for (const [x, y] of startPos) {
+    arr[y] = replaceCharInString(arr[y], x, "0");
+  }
+  return arr;
 };
 
 function bloxSolver(arr) {}
 
-module.exports = { bloxSolver, Box2d, getStartPosition, findNextPosition };
+module.exports = {
+  bloxSolver,
+  Box2d,
+  getStartPosition,
+  findNextPosition,
+  moveToNextPosition,
+};

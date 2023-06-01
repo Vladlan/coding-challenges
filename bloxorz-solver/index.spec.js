@@ -1,4 +1,6 @@
+const { before } = require("node:test");
 const { Box2d } = require("./index");
+
 const level1 = () => [
   "1110000000",
   "1B11110000",
@@ -71,14 +73,46 @@ describe("findNextPosition", () => {
       getStartPosition(level2()),
       box
     );
-    expect(res).toEqual([[3, 1]]);
+    expect(res).toEqual([[4, 1]]);
     expect(d).toEqual("R");
   });
 });
 
-// describe("moveBox", () => {
-//   it("should move box", () => {
-//     const res = getStartPosition(level1);
-//     expect(res).toEqual([1, 1]);
-//   });
-// });
+describe("moveToNextPosition", () => {
+  const step1 = () => [
+    "1110000000",
+    "10BB110000",
+    "1111111110",
+    "0111111111",
+    "0000011X11",
+    "0000001110",
+  ];
+  const step2 = () => [
+    "1110000000",
+    "1000B10000",
+    "1111111110",
+    "0111111111",
+    "0000011X11",
+    "0000001110",
+  ];
+  box = null;
+  beforeEach(() => {
+    box = new Box2d();
+  });
+  it("should return level with new box position step1", () => {
+    const level = level1();
+    expect(moveToNextPosition(level, box)).toEqual(step1());
+  });
+  it("should return level with new box position step2", () => {
+    const level = step1();
+    box.R();
+    expect(moveToNextPosition(level, box)).toEqual(step2());
+  });
+  it("should return level with new box position after step1 & step2", () => {
+    const level = level1();
+    const lStep1 = moveToNextPosition(level, box);
+    expect(lStep1).toEqual(step1());
+    const lStep2 = moveToNextPosition(lStep1, box);
+    expect(lStep2).toEqual(step2());
+  });
+});
