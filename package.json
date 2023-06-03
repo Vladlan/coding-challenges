@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest ./bloxorz-solver",
+    "test": "jest ./breaking-the-vigenere-cipher",
     "test:one": "jest -t 'findNextPosition should find next position for level1 (28 ms)'",
     "debug": "node --nolazy --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --colors --verbose",
     "test:debug": "open -a \"Google Chrome\" chrome://inspect && node --nolazy --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --colors --verbose --watchAll --notify"
