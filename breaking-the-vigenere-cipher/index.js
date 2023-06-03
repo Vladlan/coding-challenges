@@ -1,11 +1,4 @@
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//               "RSTUVWXYZABCDEFGHIJKLMNOPQ";
-
-const log1 = (str, str2, index) => {
-  if (index === 4) {
-    console.log(str, str2);
-  }
-};
 
 const OCCUR_WEIGHTS = {
   E: 0.111607,
@@ -36,33 +29,7 @@ const OCCUR_WEIGHTS = {
   Q: 0.001962,
 };
 
-const MOST_OCCUR_LETTERS = ["E", "A", "R", "I", "O", "T", "N", "S"];
-const MOST_RARE_LETTERS = [
-  "Q",
-  "J",
-  "Z",
-  "X",
-  "V",
-  "K",
-  "W",
-  "Y",
-  "F",
-  "B",
-  "G",
-];
-
 const generateCypherReplacement = (key, keyLength) => {
-  //   if (keyLength === 1) {
-  // if (key === "E") {
-  //   key = "U"; // U index 3 in map of occurences
-  // }
-  // if (key === "I") {
-  //   key = "Y"; // Y index 3
-  // }
-  //   if (key === "H") {
-  //     key = "G"; // Q index 3
-  //   }
-  //   }
   const cypherReplacement = {};
   const eI = ALPHABET.indexOf("E");
   const foundECharIn = ALPHABET.indexOf(key);
@@ -100,17 +67,16 @@ function divideStringOnGroups(str, keyLength) {
   return groups;
 }
 
-function getCorrectRationBy5MostOccurentChars(decodedText) {
+function getCorrectRationBy9MostOccurentChars(decodedText) {
   const decryptedTextMap = {};
   decodedText.forEach((c) => {
     decryptedTextMap[c] = decryptedTextMap[c] ? decryptedTextMap[c] + 1 : 1;
   });
-  const first5Chars = getSortedByOccursChars(decryptedTextMap).slice(0, 9);
-  //   console.log("first5Chars: ", first5Chars);
-  const probabilityOfGood = first5Chars.reduce((acc, el) => {
+  const first9Chars = getSortedByOccursChars(decryptedTextMap).slice(0, 9);
+  const probabilityOfGoodOccurence = first9Chars.reduce((acc, el) => {
     return acc + OCCUR_WEIGHTS[el];
   }, 0);
-  return probabilityOfGood;
+  return probabilityOfGoodOccurence;
 }
 
 function decryptText(str, keyLength) {
@@ -123,25 +89,20 @@ function decryptText(str, keyLength) {
       map[c] = map[c] ? map[c] + 1 : 1;
       genericMap[c] = genericMap[c] ? genericMap[c] + 1 : 1;
     });
-    let [maxOccurKey, maxOccurKey2, maxOccurKey3, maxOccurKey4] =
-      getSortedByOccursChars(map);
     const sortedCharsByOccurence = getSortedByOccursChars(map);
     const probabilitiesMap = {};
 
     for (const eKey of sortedCharsByOccurence) {
-      //   console.log("eKey: ", eKey);
       const replacementMap = generateCypherReplacement(eKey, keyLength);
       const decrypted = decrypt(chars.join(""), replacementMap);
-      probabilitiesMap[eKey] = getCorrectRationBy5MostOccurentChars(decrypted);
+      probabilitiesMap[eKey] = getCorrectRationBy9MostOccurentChars(decrypted);
     }
     const sortedProbabilitiesMap = Object.entries(probabilitiesMap).sort(
       (a, b) => b[1] - a[1]
     );
-    log1("sortedProbabilitiesMap: ", sortedProbabilitiesMap, index);
-    maxOccurKey = sortedProbabilitiesMap[0][0];
+    const maxOccurKey = sortedProbabilitiesMap[0][0];
     const replacementMap = generateCypherReplacement(maxOccurKey, keyLength);
-    const decrypted = decrypt(chars.join(""), replacementMap);
-    return decrypted;
+    return decrypt(chars.join(""), replacementMap);
   });
   while (answer.length !== str.length) {
     for (let i = 0; i < keyLength; i++) {
@@ -167,10 +128,7 @@ function getShiftsForKey(encrText, decryptedText, keyLength) {
 
 function getKeyword(ciphertext, keyLength) {
   const text = decryptText(ciphertext, keyLength);
-  //   console.log("ciphertext: ", ciphertext);
-  //   console.log("text: ", text);
   const shifts = getShiftsForKey(ciphertext, text, keyLength);
-  //   console.log("shifts: ", shifts);
   const keyword = [];
   for (const shift of shifts) {
     keyword.push(String.fromCharCode(shift + 65));
