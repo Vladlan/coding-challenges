@@ -27,7 +27,8 @@ function hand(holeCards, communityCards) {
     checkIfStraight(suits) ||
     checkIfThreeOfAKind(suits, holeCards) ||
     checkIfTwoPairs(suits, holeCards) ||
-    checkIfPair(suits, holeCards)
+    checkIfPair(suits, holeCards) ||
+    checkIfNothing(suits)
   );
 }
 
@@ -183,7 +184,8 @@ function checkIfTwoPairs(sortedCardsBySuit) {
   }
   const pairs = Object.entries(kindsMap)
     .filter(([card, count]) => count === 2)
-    .map(([card, count]) => card).reverse();
+    .map(([card, count]) => card)
+    .reverse();
 
   const restCardsExceptPairs = Object.entries(kindsMap)
     .filter(([card, count]) => count !== 2)
@@ -192,10 +194,7 @@ function checkIfTwoPairs(sortedCardsBySuit) {
   if (pairs.length === 2) {
     return {
       type: "two pair",
-      ranks: [
-        ...pairs,
-        restCardsExceptPairs[0],
-      ],
+      ranks: [...pairs, restCardsExceptPairs[0]],
     };
   }
 }
@@ -211,9 +210,7 @@ function checkIfPair(sortedCardsBySuit) {
       }
     });
   }
-  const pair = Object.entries(kindsMap).find(
-    ([card, count]) => count === 2
-  );
+  const pair = Object.entries(kindsMap).find(([card, count]) => count === 2);
   const restCardsExceptPair = Object.entries(kindsMap)
     .filter(([card, count]) => count !== 2)
     .map(([card, count]) => card)
@@ -225,6 +222,22 @@ function checkIfPair(sortedCardsBySuit) {
       ranks: [pair[0], ...restCardsExceptPair],
     };
   }
+}
+
+function checkIfNothing(sortedCardsBySuit) {
+  const kindsMap = {};
+  for (const deck of Object.values(sortedCardsBySuit)) {
+    deck.forEach((card) => {
+      kindsMap[card] = 1;
+    });
+  }
+  const restCards = Object.entries(kindsMap)
+    .map(([card, count]) => card)
+    .sort(sortByCardPriority);
+  return {
+    type: "nothing",
+    ranks: restCards.slice(0, 5),
+  };
 }
 
 module.exports = {
