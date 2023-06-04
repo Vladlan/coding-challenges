@@ -26,7 +26,8 @@ function hand(holeCards, communityCards) {
     checkIfFlush(suits) ||
     checkIfStraight(suits) ||
     checkIfThreeOfAKind(suits, holeCards) ||
-    checkIfTwoPairs(suits, holeCards)
+    checkIfTwoPairs(suits, holeCards) ||
+    checkIfPair(suits, holeCards)
   );
 }
 
@@ -195,6 +196,33 @@ function checkIfTwoPairs(sortedCardsBySuit) {
         ...pairs,
         restCardsExceptPairs[0],
       ],
+    };
+  }
+}
+
+function checkIfPair(sortedCardsBySuit) {
+  const kindsMap = {};
+  for (const deck of Object.values(sortedCardsBySuit)) {
+    deck.forEach((card) => {
+      if (!kindsMap[card]) {
+        kindsMap[card] = 1;
+      } else {
+        kindsMap[card]++;
+      }
+    });
+  }
+  const pair = Object.entries(kindsMap).find(
+    ([card, count]) => count === 2
+  );
+  const restCardsExceptPair = Object.entries(kindsMap)
+    .filter(([card, count]) => count !== 2)
+    .map(([card, count]) => card)
+    .slice(-3)
+    .reverse();
+  if (pair) {
+    return {
+      type: "pair",
+      ranks: [pair[0], ...restCardsExceptPair],
     };
   }
 }
