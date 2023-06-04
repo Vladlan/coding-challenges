@@ -24,15 +24,15 @@ function hand(holeCards, communityCards) {
     checkIfFourOfAKind(suits, holeCards) ||
     checkIfFullHouse(suits) ||
     checkIfFlush(suits) ||
-    checkIfStraight(
-      Object.values(suits)
-        .reduce((acc, val) => acc.concat(val), [])
-        .sort(sortByCardPriority)
-    )
+    checkIfStraight(suits) ||
+    checkIfThreeOfAKind(suits, holeCards)
   );
 }
 
-function checkIfStraight(sortedDeck) {
+function checkIfStraight(sortedCardsBySuit) {
+  const sortedDeck = Object.values(sortedCardsBySuit)
+    .reduce((acc, val) => acc.concat(val), [])
+    .sort(sortByCardPriority);
   if (sortedDeck.length < 5) return false;
   const cardsSequence = [];
   for (let i = 0; i < sortedDeck.length - 1; i++) {
@@ -51,7 +51,7 @@ function checkIfStraight(sortedDeck) {
       if (cardsSequence.length === 4 && currentCard) {
         cardsSequence.push(currentCard);
         return { type: "straight", ranks: cardsSequence };
-      } 
+      }
     }
   }
 }
@@ -139,6 +139,33 @@ function sortBySuits(holeCards, communityCards) {
       .sort(sortByCardPriority);
   });
   return newSuits;
+}
+
+function checkIfThreeOfAKind(sortedCardsBySuit) {
+  const kindsMap = {};
+  for (const deck of Object.values(sortedCardsBySuit)) {
+    deck.forEach((card) => {
+      if (!kindsMap[card]) {
+        kindsMap[card] = 1;
+      } else {
+        kindsMap[card]++;
+      }
+    });
+  }
+  const threeOfAKind = Object.entries(kindsMap).find(
+    ([card, count]) => count === 3
+  );
+  const restCardsExceptThreeOfAKind = Object.entries(kindsMap)
+    .filter(([card, count]) => count !== 3)
+    .map(([card, count]) => card)
+    .slice(-2)
+    .reverse();
+  if (threeOfAKind) {
+    return {
+      type: "three-of-a-kind",
+      ranks: [threeOfAKind[0], ...restCardsExceptThreeOfAKind],
+    };
+  }
 }
 
 module.exports = {
