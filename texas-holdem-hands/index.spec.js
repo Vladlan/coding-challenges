@@ -52,7 +52,7 @@ describe("hand", () => {
   ];
 
   for (let n = 0; n < input.length; n++) {
-    if (n === 7) {
+    if (n === 6) {
       it(`#${n} hand(${(input[0], input[1])}) should return ${
         output[n]
       }`, () => {

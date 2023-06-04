@@ -18,7 +18,9 @@ const CARD_PRIORITIES = [
 function hand(holeCards, communityCards) {
   const suits = sortBySuits(holeCards, communityCards);
   console.log("suits: ", suits);
-  return checkIfStraightFlush(suits) || checkIfFourOfAKind(suits, holeCards);
+  return checkIfStraightFlush(suits) 
+  || checkIfFourOfAKind(suits, holeCards)
+  || checkIfFullHouse(suits);
 }
 
 function checkIfStraight(sortedCards) {
@@ -71,6 +73,31 @@ function checkIfFourOfAKind(cards, holeCards) {
     };
   }
 }
+
+function checkIfFullHouse(cards) {
+  const kindsMap = {};
+  for (const deck of Object.values(cards)) {
+    deck.forEach((card) => {
+      if (!kindsMap[card]) {
+        kindsMap[card] = 1;
+      } else {
+        kindsMap[card]++;
+      }
+    });
+  }
+  const threeOfAKind = Object.entries(kindsMap).find(
+    ([card, count]) => count === 3
+  );
+  const pair = Object.entries(kindsMap).find(([card, count]) => count === 2);
+  if (threeOfAKind && pair) {
+    return {
+      type: "full house",
+      ranks: [threeOfAKind[0], pair[0]],
+    };
+  }
+  return false;
+}
+
 
 function sortBySuits(holeCards, communityCards) {
   const suits = { "♣": [], "♦": [], "♥": [], "♠": [] };
