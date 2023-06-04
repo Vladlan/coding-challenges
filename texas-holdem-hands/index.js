@@ -18,7 +18,7 @@ const CARD_PRIORITIES = [
 function hand(holeCards, communityCards) {
   const suits = sortBySuits(holeCards, communityCards);
   console.log("suits: ", suits);
-  return checkIfStraightFlush(suits);
+  return checkIfStraightFlush(suits) || checkIfFourOfAKind(suits, holeCards);
 }
 
 function checkIfStraight(sortedCards) {
@@ -48,6 +48,28 @@ function checkIfStraightFlush(cards) {
     }
   }
   return false;
+}
+
+function checkIfFourOfAKind(cards, holeCards) {
+  const kindsMap = {};
+  for (const deck of Object.values(cards)) {
+    deck.forEach((card) => {
+      if (!kindsMap[card]) {
+        kindsMap[card] = 1;
+      } else {
+        kindsMap[card]++;
+      }
+    });
+  }
+  const fourOfAKind = Object.entries(kindsMap).find(
+    ([card, count]) => count === 4
+  );
+  if (fourOfAKind) {
+    return {
+      type: "four-of-a-kind",
+      ranks: holeCards.map((card) => card.replace(/[♣♦♥♠]/g, "")),
+    };
+  }
 }
 
 function sortBySuits(holeCards, communityCards) {
