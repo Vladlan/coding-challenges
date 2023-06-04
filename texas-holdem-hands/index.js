@@ -14,21 +14,30 @@ const CARD_PRIORITIES = [
   "K",
   "A",
 ];
+const sortByCardPriority = (a, b) =>
+  CARD_PRIORITIES.indexOf(b) - CARD_PRIORITIES.indexOf(a);
 
 function hand(holeCards, communityCards) {
   const suits = sortBySuits(holeCards, communityCards);
-  console.log("suits: ", suits);
-  return checkIfStraightFlush(suits) 
-  || checkIfFourOfAKind(suits, holeCards)
-  || checkIfFullHouse(suits);
+  return (
+    checkIfStraightFlush(suits) ||
+    checkIfFourOfAKind(suits, holeCards) ||
+    checkIfFullHouse(suits) ||
+    checkIfFlush(suits) ||
+    checkIfStraight(
+      Object.values(suits)
+        .reduce((acc, val) => acc.concat(val), [])
+        .sort(sortByCardPriority)
+    )
+  );
 }
 
-function checkIfStraight(sortedCards) {
-  if (sortedCards.length < 5) return false;
+function checkIfStraight(sortedDeck) {
+  if (sortedDeck.length < 5) return false;
   const cardsSequence = [];
-  for (let i = 0; i < sortedCards.length - 1; i++) {
-    const currentCard = sortedCards[i];
-    const nextCard = sortedCards[i + 1];
+  for (let i = 0; i < sortedDeck.length - 1; i++) {
+    const currentCard = sortedDeck[i];
+    const nextCard = sortedDeck[i + 1];
     if (
       CARD_PRIORITIES.indexOf(currentCard) -
         CARD_PRIORITIES.indexOf(nextCard) ===
@@ -36,17 +45,23 @@ function checkIfStraight(sortedCards) {
     ) {
       cardsSequence.push(currentCard);
       if (cardsSequence.length === 5) {
-        return cardsSequence;
+        return { type: "straight", ranks: cardsSequence };
       }
+    } else {
+      if (cardsSequence.length === 4 && currentCard) {
+        cardsSequence.push(currentCard);
+        return { type: "straight", ranks: cardsSequence };
+      } 
     }
   }
 }
 
-function checkIfStraightFlush(cards) {
-  for (const deck of Object.values(cards)) {
+function checkIfStraightFlush(sortedCards) {
+  for (const deck of Object.values(sortedCards)) {
     if (deck.length >= 5) {
       const straightSeq = checkIfStraight(deck);
-      if (straightSeq) return { type: "straight-flush", ranks: straightSeq };
+      if (straightSeq)
+        return { type: "straight-flush", ranks: straightSeq.ranks };
     }
   }
   return false;
@@ -98,6 +113,14 @@ function checkIfFullHouse(cards) {
   return false;
 }
 
+function checkIfFlush(cards) {
+  for (const deck of Object.values(cards)) {
+    if (deck.length >= 5) {
+      return { type: "flush", ranks: deck.slice(0, 5) };
+    }
+  }
+  return false;
+}
 
 function sortBySuits(holeCards, communityCards) {
   const suits = { "♣": [], "♦": [], "♥": [], "♠": [] };
@@ -113,7 +136,7 @@ function sortBySuits(holeCards, communityCards) {
     if (!cards.length) return false;
     newSuits[suit] = cards
       .map((card) => card.replace(/[♣♦♥♠]/g, ""))
-      .sort((a, b) => CARD_PRIORITIES.indexOf(b) - CARD_PRIORITIES.indexOf(a));
+      .sort(sortByCardPriority);
   });
   return newSuits;
 }

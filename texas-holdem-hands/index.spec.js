@@ -52,10 +52,10 @@ describe("hand", () => {
   ];
 
   for (let n = 0; n < input.length; n++) {
-    if (n === 6) {
-      it(`#${n} hand(${(input[0], input[1])}) should return ${
-        output[n]
-      }`, () => {
+    if (n === 3) {
+      it(`#${n} hand(${(input[0], input[1])}) should return "${
+        output[n].type
+      }"`, () => {
         const res = hand(...input[n]);
         expect(res).toEqual(output[n]);
       });
