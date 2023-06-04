@@ -38,6 +38,10 @@ describe("hand", () => {
       ["8♠", "6♠"],
       ["7♠", "5♠", "9♠", "J♠", "10♠"],
     ],
+    [
+      [ 'Q♠', 'K♦' ],
+      [ 'J♣', '10♥', '9♥', 'K♥', 'K♦' ],
+    ],
   ];
   const output = [
     { type: "nothing", ranks: ["A", "K", "Q", "J", "9"] },
@@ -49,10 +53,11 @@ describe("hand", () => {
     { type: "full house", ranks: ["A", "K"] },
     { type: "four-of-a-kind", ranks: ["2", "3"] },
     { type: "straight-flush", ranks: ["J", "10", "9", "8", "7"] },
+    { type: "straight", ranks: ["K", "Q", "J", "10", "9"] },
   ];
 
   for (let n = 0; n < input.length; n++) {
-    if (n === 0) {
+    // if (n === 0) {
       it(`#${n} hand(${(input[0], input[1])}) should return "${
         output[n].type
       }"`, () => {
@@ -60,5 +65,5 @@ describe("hand", () => {
         expect(res).toEqual(output[n]);
       });
     }
-  }
+  // }
 });

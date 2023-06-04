@@ -36,25 +36,24 @@ function checkIfStraight(sortedCardsBySuit) {
   const sortedDeck = Object.values(sortedCardsBySuit)
     .reduce((acc, val) => acc.concat(val), [])
     .sort(sortByCardPriority);
-  if (sortedDeck.length < 5) return false;
+  const uniqueDeck = [...new Set(sortedDeck)];
+  if (uniqueDeck.length < 5) return false;
   const cardsSequence = [];
-  for (let i = 0; i < sortedDeck.length - 1; i++) {
-    const currentCard = sortedDeck[i];
-    const nextCard = sortedDeck[i + 1];
+  for (let i = 0; i < uniqueDeck.length - 1; i++) {
+    const currentCard = uniqueDeck[i];
+    const nextCard = uniqueDeck[i + 1];
     if (
       CARD_PRIORITIES.indexOf(currentCard) -
-        CARD_PRIORITIES.indexOf(nextCard) ===
+        CARD_PRIORITIES.indexOf(nextCard) !==
       1
-    ) {
-      cardsSequence.push(currentCard);
-      if (cardsSequence.length === 5) {
-        return { type: "straight", ranks: cardsSequence };
-      }
-    } else {
-      if (cardsSequence.length === 4 && currentCard) {
-        cardsSequence.push(currentCard);
-        return { type: "straight", ranks: cardsSequence };
-      }
+    ) return false;
+    cardsSequence.push(currentCard);
+    if (cardsSequence.length === 4) {
+      cardsSequence.push(nextCard);
+      return { type: "straight", ranks: cardsSequence };
+    }
+    if (cardsSequence.length === 5) {
+      return { type: "straight", ranks: cardsSequence };
     }
   }
 }
