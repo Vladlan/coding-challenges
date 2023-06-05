@@ -46,14 +46,14 @@ describe("hand", () => {
       ["6♣", "5♦"],
       ["K♥", "6♠", "8♠", "9♠", "7♦"],
     ],
-    // [
-    //   ["5♠", "5♦"],
-    //   ["7♠", "2♠", "10♥", "5♥", "5♣"],
-    // ],
-    // [
-    //   ["4♠", "10♣"],
-    //   ["A♦", "10♥", "10♠", "5♥", "K♥"],
-    // ],
+    [
+      ["5♠", "5♦"],
+      ["7♠", "2♠", "10♥", "5♥", "5♣"],
+    ],
+    [
+      ["4♠", "10♣"],
+      ["A♦", "10♥", "10♠", "5♥", "K♥"],
+    ],
   ];
   const output = [
     { type: "nothing", ranks: ["A", "K", "Q", "J", "9"] },
@@ -67,8 +67,8 @@ describe("hand", () => {
     { type: "straight-flush", ranks: ["J", "10", "9", "8", "7"] },
     { type: "straight", ranks: ["K", "Q", "J", "10", "9"] },
     { type: "straight", ranks: ["9", "8", "7", "6", "5"] },
-    // { type: "four-of-a-kind", ranks: ["5", "10"] },
-    // { type: "three-of-a-kind", ranks: ["10", "A", "K"] },
+    { type: "four-of-a-kind", ranks: ["5", "10"] },
+    { type: "three-of-a-kind", ranks: ["10", "A", "K"] },
   ];
 
   if (output.length !== input.length) {

@@ -171,7 +171,8 @@ function checkIfThreeOfAKind(sortedCardsBySuit) {
     .filter(([card, count]) => count !== 3)
     .map(([card, count]) => card)
     .slice(-2)
-    .reverse();
+    .reverse()
+    .sort(sortByCardPriority);
   if (threeOfAKind) {
     return {
       type: "three-of-a-kind",
