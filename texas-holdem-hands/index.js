@@ -16,6 +16,7 @@ const CARD_PRIORITIES = [
 ];
 const sortByCardPriority = (a, b) =>
   CARD_PRIORITIES.indexOf(b) - CARD_PRIORITIES.indexOf(a);
+const removeSuits = (card) => card.replace(/[♣♦♥♠]/g, "");
 
 function hand(holeCards, communityCards) {
   const suits = sortBySuits(holeCards, communityCards);
@@ -38,22 +39,31 @@ function checkIfStraight(sortedCardsBySuit) {
     .sort(sortByCardPriority);
   const uniqueDeck = [...new Set(sortedDeck)];
   if (uniqueDeck.length < 5) return false;
-  const cardsSequence = [];
+  let cardsSequenceMap = {};
   for (let i = 0; i < uniqueDeck.length - 1; i++) {
     const currentCard = uniqueDeck[i];
     const nextCard = uniqueDeck[i + 1];
+    if (Object.keys(cardsSequenceMap).length === 5) {
+      return {
+        type: "straight",
+        ranks: Object.keys(cardsSequenceMap).sort(sortByCardPriority),
+      };
+    }
     if (
       CARD_PRIORITIES.indexOf(currentCard) -
-        CARD_PRIORITIES.indexOf(nextCard) !==
+        CARD_PRIORITIES.indexOf(nextCard) ===
       1
-    ) return false;
-    cardsSequence.push(currentCard);
-    if (cardsSequence.length === 4) {
-      cardsSequence.push(nextCard);
-      return { type: "straight", ranks: cardsSequence };
-    }
-    if (cardsSequence.length === 5) {
-      return { type: "straight", ranks: cardsSequence };
+    ) {
+      cardsSequenceMap[currentCard] = 1;
+      cardsSequenceMap[nextCard] = 1;
+      if (Object.keys(cardsSequenceMap).length === 5) {
+        return {
+          type: "straight",
+          ranks: Object.keys(cardsSequenceMap).sort(sortByCardPriority),
+        };
+      }
+    } else {
+      cardsSequenceMap = {};
     }
   }
 }
@@ -80,13 +90,15 @@ function checkIfFourOfAKind(cards, holeCards) {
       }
     });
   }
-  const fourOfAKind = Object.entries(kindsMap).find(
-    ([card, count]) => count === 4
-  );
-  if (fourOfAKind) {
+  const [fourOfAKindCard] =
+    Object.entries(kindsMap).find(([card, count]) => count === 4) || [];
+  if (fourOfAKindCard) {
+    const [additionalCard] = Object.keys(kindsMap)
+      .reverse()
+      .filter((el) => el !== fourOfAKindCard);
     return {
       type: "four-of-a-kind",
-      ranks: holeCards.map((card) => card.replace(/[♣♦♥♠]/g, "")),
+      ranks: [fourOfAKindCard, additionalCard],
     };
   }
 }
@@ -136,9 +148,7 @@ function sortBySuits(holeCards, communityCards) {
   const newSuits = {};
   Object.entries(suits).forEach(([suit, cards]) => {
     if (!cards.length) return false;
-    newSuits[suit] = cards
-      .map((card) => card.replace(/[♣♦♥♠]/g, ""))
-      .sort(sortByCardPriority);
+    newSuits[suit] = cards.map(removeSuits).sort(sortByCardPriority);
   });
   return newSuits;
 }
