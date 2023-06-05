@@ -54,6 +54,26 @@ describe("hand", () => {
       ["4♠", "10♣"],
       ["A♦", "10♥", "10♠", "5♥", "K♥"],
     ],
+    [
+      ["J♥", "K♣"],
+      ["K♥", "Q♣", "K♠", "2♠", "K♦"],
+    ],
+    [
+      ["4♠", "9♠"],
+      ["3♣", "10♣", "Q♥", "J♠", "3♥"],
+    ],
+    [
+      ["K♠", "2♣"],
+      ["J♠", "2♥", "7♦", "Q♦", "2♦"],
+    ],
+    [
+      ["Q♦", "2♠"],
+      ["10♣", "Q♠", "A♠", "A♦", "J♦"],
+    ],
+    [
+      ["3♣", "9♦"],
+      ["8♣", "3♦", "3♠", "8♠", "9♥"],
+    ],
   ];
   const output = [
     { type: "nothing", ranks: ["A", "K", "Q", "J", "9"] },
@@ -69,6 +89,11 @@ describe("hand", () => {
     { type: "straight", ranks: ["9", "8", "7", "6", "5"] },
     { type: "four-of-a-kind", ranks: ["5", "10"] },
     { type: "three-of-a-kind", ranks: ["10", "A", "K"] },
+    { type: "four-of-a-kind", ranks: ["K", "Q"] },
+    { type: "pair", ranks: ["3", "Q", "J", "10"] },
+    { type: "three-of-a-kind", ranks: ["2", "K", "Q"] },
+    { type: "two pair", ranks: ["A", "Q", "J"] },
+    { type: "full house", ranks: ["3", "9"] },
   ];
 
   if (output.length !== input.length) {
@@ -76,13 +101,12 @@ describe("hand", () => {
   }
   for (let n = 0; n < input.length; n++) {
     // if (n === output.length - 1) {
-    // if (n === 4) {
-      it(`#${n} hand(${(input[0], input[1])}) should return "${
-        output[n].type
-      }"`, () => {
-        const res = hand(...input[n]);
-        expect(res).toEqual(output[n]);
-      });
-    // }
+    // if (n !== 15) continue;
+    it(`#${n} hand(${(input[0], input[1])}) should return "${
+      output[n].type
+    }"`, () => {
+      const res = hand(...input[n]);
+      expect(res).toEqual(output[n]);
+    });
   }
 });

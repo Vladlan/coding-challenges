@@ -95,7 +95,8 @@ function checkIfFourOfAKind(cards, holeCards) {
   if (fourOfAKindCard) {
     const [additionalCard] = Object.keys(kindsMap)
       .reverse()
-      .filter((el) => el !== fourOfAKindCard);
+      .filter((el) => el !== fourOfAKindCard)
+      .sort(sortByCardPriority);
     return {
       type: "four-of-a-kind",
       ranks: [fourOfAKindCard, additionalCard],
@@ -117,8 +118,10 @@ function checkIfFullHouse(cards) {
   const threeOfAKind = Object.entries(kindsMap).find(
     ([card, count]) => count === 3
   );
-  const pair = Object.entries(kindsMap).find(([card, count]) => count === 2);
-  if (threeOfAKind && pair) {
+  const pair = Object.entries(kindsMap)
+    .filter(([card, count]) => count === 2).map(el => el[0])
+    .sort(sortByCardPriority);
+  if (threeOfAKind && pair.length) {
     return {
       type: "full house",
       ranks: [threeOfAKind[0], pair[0]],
@@ -170,9 +173,8 @@ function checkIfThreeOfAKind(sortedCardsBySuit) {
   const restCardsExceptThreeOfAKind = Object.entries(kindsMap)
     .filter(([card, count]) => count !== 3)
     .map(([card, count]) => card)
-    .slice(-2)
-    .reverse()
-    .sort(sortByCardPriority);
+    .sort(sortByCardPriority)
+    .slice(0, 2);
   if (threeOfAKind) {
     return {
       type: "three-of-a-kind",
@@ -195,7 +197,7 @@ function checkIfTwoPairs(sortedCardsBySuit) {
   const pairs = Object.entries(kindsMap)
     .filter(([card, count]) => count === 2)
     .map(([card, count]) => card)
-    .reverse();
+    .sort(sortByCardPriority);
 
   const restCardsExceptPairs = Object.entries(kindsMap)
     .filter(([card, count]) => count !== 2)
@@ -225,7 +227,8 @@ function checkIfPair(sortedCardsBySuit) {
     .filter(([card, count]) => count !== 2)
     .map(([card, count]) => card)
     .slice(-3)
-    .reverse();
+    .reverse()
+    .sort(sortByCardPriority);
   if (pair) {
     return {
       type: "pair",
