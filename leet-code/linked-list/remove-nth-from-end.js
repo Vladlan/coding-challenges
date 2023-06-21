@@ -10,36 +10,36 @@
  * @param {number} n
  * @return {ListNode}
  */
-var removeNthFromEnd = function(head, n) {
-    if(head == null || head.next == null){
-        return null;
+const removeNthFromEnd = function (head, n) {
+  if (head === null || head.next === null) {
+    return null;
+  }
+  const nodeLinks = [];
+  let node = head;
+  while (node) {
+    nodeLinks.push(node);
+    if (node.next === null) {
+      const beforeIndex = nodeLinks.length - 1 - n;
+      const index = nodeLinks.length - n;
+      const afterIndex = nodeLinks.length - n + 1;
+      const nodeBeforeRemove = nodeLinks[beforeIndex];
+      const nodeToRemove = nodeLinks[index];
+      const nodeAfterRemove = nodeLinks[afterIndex];
+      if (nodeBeforeRemove && nodeAfterRemove) {
+        nodeBeforeRemove.next = nodeAfterRemove;
+        nodeBeforeRemove.val = nodeBeforeRemove.val;
+      }
+      if (nodeBeforeRemove && !nodeAfterRemove) {
+        nodeBeforeRemove.next = null;
+      }
+      if (!nodeBeforeRemove && nodeAfterRemove) {
+        nodeToRemove.next = null;
+        return nodeAfterRemove;
+      }
+
+      return head;
+    } else {
+      node = node.next;
     }
-    const nodeLinks = [];
-    let node = head;
-    while (node) {
-        nodeLinks.push(node)
-        if (node.next === null) {
-            const beforeIndex = nodeLinks.length - 1 - n;
-            const index = nodeLinks.length - n;
-            const afterIndex = nodeLinks.length - n + 1;
-            const nodeBeforeRemove = nodeLinks[beforeIndex];
-            const nodeToRemove = nodeLinks[index];
-            const nodeAfterRemove = nodeLinks[afterIndex];
-            if (nodeBeforeRemove && nodeAfterRemove) {
-                nodeBeforeRemove.next = nodeAfterRemove;
-                nodeBeforeRemove.val = nodeBeforeRemove.val;
-            }
-            if (nodeBeforeRemove && !nodeAfterRemove) {
-                nodeBeforeRemove.next = null;
-            }
-            if (!nodeBeforeRemove && nodeAfterRemove) {
-                nodeToRemove.next = null;
-                return nodeAfterRemove
-            }
-            
-            return head;
-        } else {
-            node = node.next;
-        }
-    }
+  }
 };
