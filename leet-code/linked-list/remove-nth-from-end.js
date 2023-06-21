@@ -11,9 +11,7 @@
  * @return {ListNode}
  */
 const removeNthFromEnd = function (head, n) {
-  if (head === null || head.next === null) {
-    return null;
-  }
+  if (head === null || head.next === null) return null;
   const nodeLinks = [];
   let node = head;
   while (node) {
@@ -38,8 +36,7 @@ const removeNthFromEnd = function (head, n) {
       }
 
       return head;
-    } else {
-      node = node.next;
     }
+    node = node.next;
   }
 };
